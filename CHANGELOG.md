@@ -1,22 +1,3 @@
-## Version : [v0.1.0](https://github.com/SaitamTheBest/RAGAdmin/tree/v0.1.0) - Date : 2024-10-10
-
-### Features
-
-- add new commit option (#20241010183816)
-
-
-## Version : [v1.0.0](https://github.com/SaitamTheBest/RAGAdmin/tree/v1.0.0) - Date : 2024-10-10
-
-No significant changes.
-
-
-## Version : [0.1.0](https://github.com/SaitamTheBest/RAGAdmin/tree/0.1.0) - Date : 2024-10-10
-
-### Features
-
-- add new commit option (#20241010182030)
-
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
