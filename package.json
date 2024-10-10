@@ -4,12 +4,12 @@
   "description": "Projet BUT3 : RAGAdmin, La Poste",
   "main": "index.js",
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "husky": "^9.1.6"
+    "husky": "^8.0.0"
   }
 }
