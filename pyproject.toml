@@ -1,0 +1,9 @@
+[tool.towncrier]
+name = "ragadmin"
+version = "0.1.0"
+start_string = "<!-- towncrier release notes start -->\n"
+directory = "changelog.d"
+filename = "CHANGELOG.md"
+underlines = ["", "", ""]
+title_format = "## [{version}](https://github.com/SaitamTheBest/RAGAdmin/tree/{version}) - {project_date}"
+issue_format = "[#{issue}](https://github.com/SaitamTheBest/RAGAdmin/issues/{issue})"

@@ -1,0 +1,15 @@
+{
+  "name": "ragadmin",
+  "version": "1.0.0",
+  "description": "Projet BUT3 : RAGAdmin, La Poste",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky install",
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^9.1.6"
+  }
+}
