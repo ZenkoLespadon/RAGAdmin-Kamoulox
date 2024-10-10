@@ -4,12 +4,15 @@
   "description": "Projet BUT3 : RAGAdmin, La Poste",
   "main": "index.js",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "validate-commit-msg": "commitlint --from=HEAD~1 --to=HEAD"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "husky": "^8.0.0"
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "husky": "^8.0.3"
   }
 }
