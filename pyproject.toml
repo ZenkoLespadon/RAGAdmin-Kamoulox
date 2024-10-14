@@ -6,7 +6,6 @@ directory = "changelog.d"
 filename = "CHANGELOG.md"
 underlines = ["", "", ""]
 title_format = "## Version : [{version}](https://github.com/SaitamTheBest/RAGAdmin/tree/{version}) - Date : {project_date}"
-commit_format = "[{commit}](https://github.com/SaitamTheBest/RAGAdmin/commit/{commit})"
 
 [tool.towncrier.types]
 # Définir les types que Towncrier va utiliser pour générer le changelog
