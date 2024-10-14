@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Récupérer la dernière version à partir du dernier tag Git
-LAST_VERSION=$(git describe --tags --abbrev=0)
+LAST_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
 
 # Vérifier si un tag a été trouvé
 if [ -z "$LAST_VERSION" ]; then
