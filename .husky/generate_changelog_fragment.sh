@@ -62,6 +62,6 @@ fi
 FRAGMENT_FILE="changelog.d/${COMMIT_ID}.${FRAGMENT_TYPE}"
 
 # Écrire la description du commit dans le fichier de fragment
-echo "$DESCRIPTION" > "$FRAGMENT_FILE"
+echo "$DESCRIPTION ([$COMMIT_ID](https://github.com/SaitamTheBest/RAGAdmin/commit/$COMMIT_ID))" > "$FRAGMENT_FILE"
 
 echo "Fragment créé: $FRAGMENT_FILE"
