@@ -13,6 +13,8 @@ fi
 towncrier build --version "$LAST_VERSION"
 
 # Ajouter le changelog mis à jour dans le commit
+git fetch
+git pull
 git add .
 
 # Amender le commit pour inclure le changelog sans changer le message
