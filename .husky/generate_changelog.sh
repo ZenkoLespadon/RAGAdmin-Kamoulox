@@ -9,12 +9,13 @@ if [ -z "$LAST_VERSION" ]; then
     exit 1
 fi
 
+git fetch
+git pull
+
 # Générer le changelog à partir des fragments avec la version récupérée
 towncrier build --version "$LAST_VERSION"
 
 # Ajouter le changelog mis à jour dans le commit
-git fetch
-git pull
 git add .
 
 # Amender le commit pour inclure le changelog sans changer le message
