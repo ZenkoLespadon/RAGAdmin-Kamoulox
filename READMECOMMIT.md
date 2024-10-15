@@ -9,7 +9,7 @@ Dans ce fichier, on y retrouvera tous les changements qui ont été réalisés d
 
 Pour créer ces types, on utilise un outil appelé [towncrier](https://towncrier.readthedocs.io/en/stable/index.html). Dans le fichier [pyproject.toml](https://github.com/SaitamTheBest/RAGAdmin/blob/main/pyproject.toml), on crée tous les types qui sont nécessaires pour ranger les `commit` dans un sous-titre du [CHANGELOG.md](https://github.com/SaitamTheBest/RAGAdmin/blob/main/CHANGELOG.md).
 
-De plus, on utilise un hook appelé [Husky](https://typicode.github.io/husky/). Il permet de réaliser des actions avant ou après des `commit`. Pour cela nous utiliserons une convention de CHANGELOG appelé [commitlint](https://github.com/conventional-changelog/commitlint).# README_COMMIT
+De plus, on utilise un hook appelé [Husky](https://typicode.github.io/husky/). Il permet de réaliser des actions avant ou après des `commit`. Pour cela nous utiliserons une convention de CHANGELOG appelé [commitlint](https://github.com/conventional-changelog/commitlint).
 
 ## Types de `commit`
 
