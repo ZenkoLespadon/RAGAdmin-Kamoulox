@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'http://localhost:3000/Matias-DEVEZE/RAGAdmin.git', branch: 'main', credentialsId: 'admin'
+                checkout scm
             }
         }
 
