@@ -13,11 +13,12 @@ pipeline {
 
         stage('Set up Python') {
             steps {
-                sh 'apt-get update'
-                sh 'apt-get install -y python${PYTHON_VERSION} python3-pip'
+                // Utilisation de sudo pour mettre à jour les paquets et installer Python
+                sh 'sudo apt-get update'
+                sh 'sudo apt-get install -y python${PYTHON_VERSION} python3-pip'
                 sh 'python${PYTHON_VERSION} -m pip install --upgrade pip'
             }
-        }
+}
 
         stage('Install dependencies') {
             steps {
