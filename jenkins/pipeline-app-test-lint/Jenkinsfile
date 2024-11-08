@@ -1,0 +1,40 @@
+pipeline {
+    agent { label 'ubuntu-agent-102' }
+
+    environment {
+        PYTHON_VERSION = "3.12"
+    }
+
+    stages {
+        stage('Set up Python') {
+            steps {
+                sh "python${PYTHON_VERSION} --version"
+                sh "python${PYTHON_VERSION} -m pip --version"
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh "python${PYTHON_VERSION} -m pip install --no-index --find-links=/path/to/local/packages pylint pytest"
+            }
+        }
+
+        stage('Analyse the code with pylint') {
+            steps {
+                sh "pylint \$(git ls-files '*.py')"
+            }
+        }
+
+        stage('Run tests') {
+            steps {
+                sh "pytest"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline terminée'
+        }
+    }
+}
