@@ -13,12 +13,6 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
-            steps {
-                sh "python${PYTHON_VERSION} -m pip install --no-index --find-links=/path/to/local/packages pylint pytest"
-            }
-        }
-
         stage('Analyse the code with pylint') {
             steps {
                 sh "pylint \$(git ls-files '*.py')"
