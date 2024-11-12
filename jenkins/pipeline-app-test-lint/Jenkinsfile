@@ -15,7 +15,7 @@ pipeline {
 
         stage('Activate virtual environment') {
             steps {
-                sh "bash -c 'source /home/tux/ragadmin_llm/bin/activate"
+                sh "bash -c 'source /home/tux/ragadmin_llm/bin/activate'"
             }
         }
 
