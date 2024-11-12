@@ -1,0 +1,38 @@
+pipeline {
+    agent { label 'ubuntu-agent-102' }
+
+    environment {
+        PYTHON_VERSION = "3.12"
+        VENV_PATH = "/home/tux/ragadmin_llm"
+    }
+
+    stages {
+        stage('Set up Python') {
+            steps {
+                sh "python${PYTHON_VERSION} --version"
+                sh "python${PYTHON_VERSION} -m pip --version"
+            }
+        }
+
+        stage('Activate virtual environment') {
+            steps {
+                sh "python${PYTHON_VERSION} -m venv ${VENV_PATH}"
+            }
+        }
+
+        stage('Analyse the code with pylint') {
+            steps {
+                sh """
+                bash -c 'source ${VENV_PATH}/bin/activate && \
+                pylint \$(git ls-files '*.py')'
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline terminée'
+        }
+    }
+}

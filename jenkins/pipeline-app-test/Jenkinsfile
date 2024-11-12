@@ -20,15 +20,6 @@ pipeline {
             }
         }
 
-        stage('Analyse the code with pylint') {
-            steps {
-                sh """
-                bash -c 'source ${VENV_PATH}/bin/activate && \
-                pylint \$(git ls-files '*.py')'
-                """
-            }
-        }
-
         stage('Run tests') {
             steps {
                 sh """
