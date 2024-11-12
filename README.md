@@ -5,9 +5,9 @@ La configuration des machines est la suivante :
 
 <table>
     <tr>
-        <th>Machines</th>
-        <th>Lien</th>
-        <th>Ports</th>
+        <th>Machine</th>
+        <th>Ip</th>
+        <th>Port</th>
         <th>Description</th>
     </tr>
     <tr>
@@ -38,6 +38,12 @@ La configuration des machines est la suivante :
         <td>-</td> <!-- Cellule fusionnée pour masquer la bordure -->
         <td>-</td>
         <td>Machine permettant d'accéder à l'interface graphique du LLM.</td>
+    </tr>
+    <tr>
+        <td>Chroma DB</td>
+        <td>-</td> <!-- Cellule fusionnée pour masquer la bordure -->
+        <td>-</td>
+        <td>Machine accueillant la base de données vectorielle du LLM.</td>
     </tr>
   
 </table>
