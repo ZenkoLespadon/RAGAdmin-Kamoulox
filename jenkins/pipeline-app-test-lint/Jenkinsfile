@@ -13,6 +13,12 @@ pipeline {
             }
         }
 
+        stage('Activate virtual environment') {
+            steps {
+                sh "source ragadmin_llm/bin/activate"
+            }
+        }
+
         stage('Analyse the code with pylint') {
             steps {
                 sh "pylint \$(git ls-files '*.py')"
