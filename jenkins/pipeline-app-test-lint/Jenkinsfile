@@ -23,9 +23,8 @@ pipeline {
         stage('Analyse the code with pylint') {
             steps {
                 sh """
-                source ${VENV_PATH}/bin/activate
-                pylint \$(git ls-files '*.py')
-                deactivate
+                bash -c 'source ${VENV_PATH}/bin/activate && \
+                pylint \$(git ls-files '*.py')'
                 """
             }
         }
@@ -33,9 +32,8 @@ pipeline {
         stage('Run tests') {
             steps {
                 sh """
-                source ${VENV_PATH}/bin/activate
-                pytest
-                deactivate
+                bash -c 'source ${VENV_PATH}/bin/activate && \
+                pytest'
                 """
             }
         }
