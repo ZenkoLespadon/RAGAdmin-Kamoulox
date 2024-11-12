@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         PYTHON_VERSION = "3.12"
+        VENV_PATH = "/home/tux/ragadmin_llm"
     }
 
     stages {
@@ -15,19 +16,27 @@ pipeline {
 
         stage('Activate virtual environment') {
             steps {
-                sh "bash -c 'source /home/tux/ragadmin_llm/bin/activate'"
+                sh "python${PYTHON_VERSION} -m venv ${VENV_PATH}"
             }
         }
 
         stage('Analyse the code with pylint') {
             steps {
-                sh "pylint \$(git ls-files '*.py')"
+                sh """
+                source ${VENV_PATH}/bin/activate
+                pylint \$(git ls-files '*.py')
+                deactivate
+                """
             }
         }
 
         stage('Run tests') {
             steps {
-                sh "pytest"
+                sh """
+                source ${VENV_PATH}/bin/activate
+                pytest
+                deactivate
+                """
             }
         }
     }
