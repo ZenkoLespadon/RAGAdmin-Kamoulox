@@ -127,14 +127,14 @@ def ajout_documentpdf(document_path, collection_name):
                     # Ajout de la ligne au contenu de la page actuelle
                     page_contenu.append(line)
             
-            # Ajouter la dernière page si elle ne se termine pas par un numéro de page
+            # Ajouter la dernière page
             if page_contenu:
                 clean_content = "".join(page_contenu).replace("\n", "").strip()
                 documents.append(clean_content)
                 metadonnees.append(page_num-1)
 
         for i, (page_content, page_number) in enumerate(zip(documents, metadonnees)):
-            # Créer un identifiant unique pour chaque document (par exemple, "doc1", "doc2", ...)
+            # Créer un identifiant unique pour chaque document (par exemple, "doc_1", "doc_2", ...)
             doc_id = f"doc_{i + 1}"
             
             # Ajouter le document avec son contenu et ses métadonnées
