@@ -2,16 +2,8 @@ import os
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-
-def replace_backslashes(input_str: str) -> str:
-    # Remplacer tous les antislashs par des slashs
-    result = ""
-    for letter in input_str:
-        if letter == "\\" :
-            result += "/"
-        else:
-            result += letter
-    return result
+from pathlib import Path
+import shutil
 
 def fileOrFolder(path:str) -> str :
     """
@@ -38,15 +30,9 @@ def create_missing_directories(path: str) -> None:
     :param path: Le chemin d'accès pour lequel les répertoires manquants doivent être créés.
     """
 
-    path = r"" + replace_backslashes(event.src_path)
-    if fileOrFolder(path) == "file":  # A IMPLEMENTER
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-
-    elif fileOrFolder(path) == "folder":
-        os.makedirs(path, exist_ok=True)
-        print(f"Les répertoires manquants ont été créés pour : {path}")
-    else:
-        print(f"chemin invalide")
+    path = os.path.normpath(path)
+    folderPath = Path(os.path.dirname(path))
+    folderPath.mkdir(parents=True, exist_ok=True)
 
 def replaceFirstFolder(path:str,fileName:str) -> str :
     path = os.path.normpath(path)
@@ -58,29 +44,73 @@ def replaceFirstFolder(path:str,fileName:str) -> str :
     return os.path.join(*dossiers)
 
 class MyHandler(FileSystemEventHandler):
+
+    def __init__(self,mirrorFolder):
+        self.mirrorFolder=mirrorFolder
+
+
     def on_created(self, event):
-        path = r"" + replace_backslashes(event.src_path)
+        path = os.path.normpath(event.src_path)
         if fileOrFolder(path) == "file":  # Éviter les dossiers
-            print(f"Fichier créé : ", replace_backslashes(path))
+
+
+            mirrorPath = replaceFirstFolder(path,self.mirrorFolder)
+            fileName = Path(mirrorPath).name
+
+            create_missing_directories(mirrorPath)
+
+            # A changer avec la fonction de convertion de pdf
+            # ######################################
+            file = Path(mirrorPath)
+            if file.is_file():
+                print("le fichier existe déjà")
+            else:
+                with open(mirrorPath, 'w') as newFile:
+                    newFile.write("")  # Crée un fichier vide
+
+                print(f"Fichier créé : ", path)
+
+            # ######################################
         elif fileOrFolder(path) == "folder":
-            print(f"Dossier créé : ", replace_backslashes(path))
+            print(f"Dossier créé : ", path)
+            mirrorPath = replaceFirstFolder(path,self.mirrorFolder)
+            print(mirrorPath)
+            create_missing_directories(mirrorPath)
+
         else:
             print(f"Objet créé inconnu")
 
     def on_deleted(self, event):
-        path = r"" + replace_backslashes(event.src_path)
-        print(f"Objet supprimé : ",replace_backslashes(path))
+        path = os.path.normpath(event.src_path)
+
+        mirrorPath = replaceFirstFolder(path,self.mirrorFolder)
+        file = Path(mirrorPath)
+
+        if file.is_file():
+            print(f"Le fichier '{file}' existe.")
+            os.remove(mirrorPath)
+        else:
+            if os.path.isdir(mirrorPath):# si le dossier existe
+
+                if not os.listdir(mirrorPath): #si le dossier est vide
+                    os.rmdir(mirrorPath)
+                else:                          #si le dossier est rempli
+                    shutil.rmtree(mirrorPath)
+            else:
+                print(f"Le dossier '{file}' n'existe pas.")
+
+
 
 
 
 if __name__ == "__main__" :
 
     # Dossier à surveiller
-    path_to_watch = "./docs"  # Remplacez par le chemin du dossier que vous voulez surveiller
-    path_to_record = "./files"
+    path_to_watch = "docs"  # Remplacez par le chemin du dossier que vous voulez surveiller
+    path_to_record = "files"
 
     # Initialiser l'observateur
-    event_handler = MyHandler()
+    event_handler = MyHandler(path_to_record)
     observer = Observer()
     observer.schedule(event_handler, path=path_to_watch, recursive=True)  # Activer la surveillance récursive
 
