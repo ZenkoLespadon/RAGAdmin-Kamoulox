@@ -143,16 +143,16 @@ def ajout_documentpdf(document_path, collection_name):
             metadatas={"page_number": page_number}
         )
 
-def main():
-    # Créer une nouvelle collection
-    delete_collection('my_collection')
-    collection_name = 'my_collection'
+# def main():
+#     # Créer une nouvelle collection
+#     delete_collection('my_collection')
+#     collection_name = 'my_collection'
 
-    file_path = 'data\\Livret daccueil.pdf'
-    collection = create_collection(collection_name)
-    ajout_documentpdf(file_path, collection_name)
-    query_text = "guide de rentrée"
-    search_in_collection_text(collection_name, query_text)
+#     file_path = 'data\\Livret daccueil.pdf'
+#     collection = create_collection(collection_name)
+#     ajout_documentpdf(file_path, collection_name)
+#     query_text = "guide de rentrée"
+#     search_in_collection_text(collection_name, query_text)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
