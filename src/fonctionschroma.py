@@ -94,51 +94,54 @@ def search_in_collection_embedding(collection_name: str, query_embedding, k=1):
         return None
 
 def ajout_documentpdf(document_path, collection_name):
-    pdf_chemin = document_path  # Remplacez par votre fichier PDF
-    txt_chemin = "data\\document.txt"  # Chemin de sortie pour le fichier TXT
+    try:
+        pdf_chemin = document_path  # Remplacez par votre fichier PDF
+        txt_chemin = "data\\document.txt"  # Chemin de sortie pour le fichier TXT
 
-    # Appeler la fonction
-    convertir_pdf_en_txt(pdf_chemin, txt_chemin)
-    
-    client = get_client()
-    collection = client.get_collection(collection_name)
-    # Initialisation des listes pour le contenu des pages et les métadonnées des numéros de page
-    documents = []
-    metadonnees = []
-    
-    # Lecture du fichier
-    with open(txt_chemin, 'r', encoding='utf-8') as file:
-        page_contenu = []  # Contenu temporaire pour une page
-        page_num = 2       # Initialisation du numéro de page
+        # Appeler la fonction
+        convertir_pdf_en_txt(pdf_chemin, txt_chemin)
         
-        for line in file:
-            # Si la ligne contient une indication de page du type "p.<numéro>", cela signifie le début de la page suivante
-            if f"=== Page {page_num} ===" in line:
-                # Ajout du contenu de la page dans le tableau documents et du numéro de page dans le tableau metadonnees
+        client = get_client()
+        collection = client.get_collection(collection_name)
+        # Initialisation des listes pour le contenu des pages et les métadonnées des numéros de page
+        documents = []
+        metadonnees = []
+        
+        # Lecture du fichier
+        with open(txt_chemin, 'r', encoding='utf-8') as file:
+            page_contenu = []  # Contenu temporaire pour une page
+            page_num = 2       # Initialisation du numéro de page
+            
+            for line in file:
+                # Si la ligne contient une indication de page du type "p.<numéro>", cela signifie le début de la page suivante
+                if f"=== Page {page_num} ===" in line:
+                    # Ajout du contenu de la page dans le tableau documents et du numéro de page dans le tableau metadonnees
+                    clean_content = "".join(page_contenu).replace("\n", "").strip()
+                    documents.append(clean_content)
+                    metadonnees.append(page_num-1)
+                    
+                    # Préparation pour la page suivante
+                    page_contenu = []  # Réinitialisation du contenu de la page
+                    page_num += 1      # Incrémentation du numéro de page
+                else:
+                    # Ajout de la ligne au contenu de la page actuelle
+                    page_contenu.append(line)
+            
+            # Ajouter la dernière page si elle ne se termine pas par un numéro de page
+            if page_contenu:
                 clean_content = "".join(page_contenu).replace("\n", "").strip()
                 documents.append(clean_content)
                 metadonnees.append(page_num-1)
-                
-                # Préparation pour la page suivante
-                page_contenu = []  # Réinitialisation du contenu de la page
-                page_num += 1      # Incrémentation du numéro de page
-            else:
-                # Ajout de la ligne au contenu de la page actuelle
-                page_contenu.append(line)
-        
-        # Ajouter la dernière page si elle ne se termine pas par un numéro de page
-        if page_contenu:
-            clean_content = "".join(page_contenu).replace("\n", "").strip()
-            documents.append(clean_content)
-            metadonnees.append(page_num-1)
 
-    for i, (page_content, page_number) in enumerate(zip(documents, metadonnees)):
-        # Créer un identifiant unique pour chaque document (par exemple, "doc1", "doc2", ...)
-        doc_id = f"doc_{i + 1}"
-        
-        # Ajouter le document avec son contenu et ses métadonnées
-        collection.add(
-            ids=doc_id,
-            documents=page_content,
-            metadatas={"page_number": page_number}
-        )
+        for i, (page_content, page_number) in enumerate(zip(documents, metadonnees)):
+            # Créer un identifiant unique pour chaque document (par exemple, "doc1", "doc2", ...)
+            doc_id = f"doc_{i + 1}"
+            
+            # Ajouter le document avec son contenu et ses métadonnées
+            collection.add(
+                ids=doc_id,
+                documents=page_content,
+                metadatas={"page_number": page_number}
+            )
+    except Exception as e:
+        print("Une erreur a eu lieu :", e)
