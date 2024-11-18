@@ -5,8 +5,6 @@ from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-
-
 def file_or_folder(path:str) -> str :
     """
         Fonction qui prend en paramette un chemin d'accès et différentie un fichier d'un dossier
@@ -24,8 +22,6 @@ def file_or_folder(path:str) -> str :
     if os.path.isfile(path):
         return "file"
     return "unknow"
-
-
 
 def create_missing_directories(path: str) -> None:
     """
@@ -53,6 +49,33 @@ def replace_first_folder(path:str,file_name:str) -> str :
         dossiers[0] = file_name
     return os.path.join(*dossiers)
 
+def get_file_extension(filename):
+    """
+    Renvoie l'extension d'un fichier.
+
+    Args:
+        filename (str): Le nom du fichier ou son chemin complet.
+
+    Returns:
+        str: L'extension du fichier (par exemple '.txt'), ou une chaîne vide si aucune extension.
+    """
+    _, extension = os.path.splitext(filename)
+    return extension
+
+def replace_extension_with_txt(file_path):
+    """
+    Remplace l'extension d'un fichier par '.txt'.
+
+    Args:
+        file_path (str): Chemin d'accès au fichier.
+
+    Returns:
+        str: Nouveau chemin avec l'extension '.txt'.
+    """
+    base_name, _ = os.path.splitext(file_path)
+    new_path = f"{base_name}.txt"
+    return new_path
+
 class MyHandler(FileSystemEventHandler):
     """
     Classe qui hérite de FileSystemEventHandler et qui redéfinit les méthodes on_created et on_deleted
@@ -77,14 +100,29 @@ class MyHandler(FileSystemEventHandler):
 
             # A changer avec la fonction de convertion de pdf
             # ######################################
-            file = Path(mirror_path)
-            if file.is_file():
+            mirror_path = replace_extension_with_txt(mirror_path)
+
+            new_txt_file = Path(mirror_path)
+            if new_txt_file.is_file():
                 #print("le fichier existe déjà")
                 pass
             else:
                 with open(mirror_path, 'w') as new_file:
                     # Crée un fichier vide
                     new_file.write("")
+
+            extension=get_file_extension(path)
+            match extension:
+                case ".pdf":
+                    print("Conversion du pdf en txt...")
+                case ".csv":
+                    print("Conversion du csv en txt...")
+                case ".txt":
+                    print("Copie du txt...")
+                case _:
+                    print(f"Extension de fichier \"{extension}\" inconnue.")
+
+
 
                 #print(f"Fichier créé : ", path)
 
@@ -116,9 +154,6 @@ class MyHandler(FileSystemEventHandler):
                     shutil.rmtree(mirror_path)
             else:
                 print(f"Le dossier '{file}' n'existe pas.")
-
-
-
 
 
 if __name__ == "__main__" :
