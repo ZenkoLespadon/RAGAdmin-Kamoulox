@@ -1,5 +1,8 @@
 import os
+from importlib.metadata import files
+
 import pypdf as pdfr
+import csv
 
 def indexing_file(dir_to_search):
     list_of_all_file = dict()
@@ -28,6 +31,29 @@ def indexing_file(dir_to_search):
         temp_name_file = ""
 
     return list_of_all_file , directories
+
+
+def indexing_csv_files(all_files):
+    files = all_files
+    csv_files = []
+    csv_dictionnary = dict()
+    temp_name_file = ""
+    for i in files:
+
+        if i.find('.csv') != -1:
+            csv_files.append(i)
+
+    for i in csv_files:
+        for j in i:
+            if j != '.':
+                temp_name_file += j
+            else:
+                csv_dictionnary[temp_name_file] = i
+                temp_name_file = ""
+        temp_name_file = ""
+    return csv_dictionnary
+
+
 
 
 def indexing_pdf_files(all_files):
