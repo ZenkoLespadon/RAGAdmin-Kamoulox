@@ -4,6 +4,8 @@ import shutil
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from service.FileConverter import *
+
 
 def file_or_folder(path:str) -> str :
     """
@@ -62,19 +64,29 @@ def get_file_extension(filename):
     _, extension = os.path.splitext(filename)
     return extension
 
-def replace_extension_with_txt(file_path):
+def replace_file_extension(file_path: str, extension: str = ".txt") -> str:
     """
-    Remplace l'extension d'un fichier par '.txt'.
+    Remplace l'extension d'un fichier par l'extension spécifiée.
 
     Args:
         file_path (str): Chemin d'accès au fichier.
+        extension (str): Nouvelle extension du fichier (par défaut '.txt').
 
     Returns:
-        str: Nouveau chemin avec l'extension '.txt'.
+        str: Nouveau chemin avec l'extension spécifiée, ou le chemin d'origine si une erreur se produit.
     """
-    base_name, _ = os.path.splitext(file_path)
-    new_path = f"{base_name}.txt"
-    return new_path
+    try:
+        # Vérifie si le chemin est un fichier et non un dossier
+        if os.path.isdir(file_path):
+            return file_path  # Retourne le chemin inchangé si c'est un dossier
+
+        base_name, _ = os.path.splitext(file_path)
+        new_path = f"{base_name}{extension}"
+        return new_path
+    except Exception:
+        # En cas d'erreur, retourne le chemin d'origine
+        return file_path
+
 
 class MyHandler(FileSystemEventHandler):
     """
@@ -100,7 +112,7 @@ class MyHandler(FileSystemEventHandler):
 
             # A changer avec la fonction de convertion de pdf
             # ######################################
-            mirror_path = replace_extension_with_txt(mirror_path)
+            mirror_path = replace_file_extension(mirror_path)
 
             new_txt_file = Path(mirror_path)
             if new_txt_file.is_file():
@@ -111,20 +123,29 @@ class MyHandler(FileSystemEventHandler):
                     # Crée un fichier vide
                     new_file.write("")
 
-            extension=get_file_extension(path)
-            match extension:
-                case ".pdf":
-                    print("Conversion du pdf en txt...")
-                case ".csv":
-                    print("Conversion du csv en txt...")
-                case ".txt":
-                    print("Copie du txt...")
-                case _:
-                    print(f"Extension de fichier \"{extension}\" inconnue.")
+                    extension=get_file_extension(path)
+                    match extension:
+                        case ".pdf":
+                            print("Conversion du pdf en txt...")
+                            # refaire la fonction pour qu'elle prenne :
+                            # le path original afin de chercher les données
+                            # le mirrorpath afin d'écrire les données
+
+
+                            print("path = ",os.path.exists(path))  # Devrait renvoyer True
+                            print("mirror_path = ",os.path.exists(mirror_path))  # Devrait renvoyer True
+
+                            convert_pdf_in_txt(path,mirror_path)
+                        case ".csv":
+                            print("Conversion du csv en txt...")
+                        case ".txt":
+                            print("Copie du txt...")
+                        case _:
+                            print(f"Extension de fichier \"{extension}\" inconnue.")
 
 
 
-                #print(f"Fichier créé : ", path)
+                        #print(f"Fichier créé : ", path)
 
             # ######################################
         elif file_or_folder(path) == "folder":
@@ -140,6 +161,7 @@ class MyHandler(FileSystemEventHandler):
         path = os.path.normpath(event.src_path)
 
         mirror_path = replace_first_folder(path,self.mirror_folder)
+        mirror_path = replace_file_extension(mirror_path)
         file = Path(mirror_path)
 
         if file.is_file():
