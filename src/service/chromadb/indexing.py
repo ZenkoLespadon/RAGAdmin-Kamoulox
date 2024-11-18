@@ -1,5 +1,5 @@
 import os
-
+import pypdf as pdfr
 
 def indexing_file(dir_to_search):
     list_of_all_file = dict()
@@ -32,4 +32,19 @@ def indexing_file(dir_to_search):
 
 def indexing_pdf_files(all_files):
     files = all_files
+    pdf_dictionnary = dict()
+    temp_name_file = ""
+    pdf_files = []
+    for i in files:
+        if i.find(".pdf") != -1:
+            pdf_files.append(i)
 
+    for i in pdf_files:
+        for j in i:
+            if j != '.':
+                temp_name_file += j
+            else:
+                pdf_dictionnary[temp_name_file] = i
+                temp_name_file = ""
+        temp_name_file = ""
+    return  pdf_dictionnary
