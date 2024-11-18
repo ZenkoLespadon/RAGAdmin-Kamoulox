@@ -48,3 +48,4 @@ def indexing_pdf_files(all_files):
                 temp_name_file = ""
         temp_name_file = ""
     return  pdf_dictionnary
+
