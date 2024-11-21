@@ -1,6 +1,6 @@
 import os
 from PyPDF2 import PdfReader
-from typing import Any
+import csv
 
 
 def convert_pdf_in_txt(source_path: str, save_path: str) -> None:
@@ -26,10 +26,8 @@ def convert_pdf_in_txt(source_path: str, save_path: str) -> None:
     source_path: str
     save_path: str
     reader: PdfReader
-    txt_file: Any
     text: str
     page_num: int
-    page: Any
     os.chmod(source_path, 0o777)
     if not os.access(source_path, os.R_OK):
         print(f"Erreur : Impossible de lire le fichier source {source_path}. Vérifiez les permissions.")
@@ -59,5 +57,52 @@ def convert_pdf_in_txt(source_path: str, save_path: str) -> None:
         e: Exception  # Exception capturée
         print(f"Erreur lors de la conversion : {e}")
 
+def convert_csv_to_txt(source_path: str, save_path: str)->None:
+    """
+    Convertit un fichier CSV en fichier TXT.
 
+    Args:
+        source_path (str): Le chemin du fichier CSV à convertir.
+        save_path (str): Le chemin du fichier TXT de sortie.
 
+    Exemple:
+        csv_to_txt("fichier.csv", "fichier.txt")
+        Cette commande convertira le fichier "fichier.csv" en "fichier.txt".
+    """
+    try:
+        with open(source_path, mode='r', newline='', encoding='utf-8') as csv_f:
+            csv_reader = csv.reader(csv_f)
+            with open(save_path, mode='w', encoding='utf-8') as txt_f:
+                for row in csv_reader:
+                    txt_f.write(";".join(row) + "\n")  # Utilisation de tabulation pour séparer les colonnes
+
+        print(f"Le fichier {source_path} a été converti en {save_path}")
+
+    except FileNotFoundError:
+        print(f"Le fichier {source_path} n'a pas été trouvé.")
+    except Exception as e:
+        print(f"Une erreur est survenue: {e}")
+
+def copy_file(source, destination):
+    """
+    Copie le contenu d'un fichier source vers un fichier de destination.
+
+    Args:
+        source (str): Le chemin du fichier source à copier.
+        destination (str): Le chemin du fichier de destination où le contenu sera copié.
+
+    Raises:
+        FileNotFoundError: Si le fichier source n'est pas trouvé.
+        Exception: Si une autre erreur se produit lors de la copie du fichier.
+
+    Exemple:
+        copy_file("source.txt", "copie.txt")
+        Cette commande copiera le contenu de "source.txt" vers "copie.txt".
+    """
+    try:
+        shutil.copy(source, destination)
+        print(f"Le fichier a été copié de {source} vers {destination}")
+    except FileNotFoundError:
+        print("Le fichier source n'a pas été trouvé.")
+    except Exception as e:
+        print(f"Une erreur est survenue: {e}")

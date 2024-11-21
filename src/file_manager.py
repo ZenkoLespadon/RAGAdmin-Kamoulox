@@ -99,29 +99,6 @@ def create_empty_file(file_path: str)->None:
         # Crée un fichier vide
         new_file.write("")
 
-def copy_file(source, destination):
-    """
-    Copie le contenu d'un fichier source vers un fichier de destination.
-
-    Args:
-        source (str): Le chemin du fichier source à copier.
-        destination (str): Le chemin du fichier de destination où le contenu sera copié.
-
-    Raises:
-        FileNotFoundError: Si le fichier source n'est pas trouvé.
-        Exception: Si une autre erreur se produit lors de la copie du fichier.
-
-    Exemple:
-        copy_file("source.txt", "copie.txt")
-        Cette commande copiera le contenu de "source.txt" vers "copie.txt".
-    """
-    try:
-        shutil.copy(source, destination)
-        print(f"Le fichier a été copié de {source} vers {destination}")
-    except FileNotFoundError:
-        print("Le fichier source n'a pas été trouvé.")
-    except Exception as e:
-        print(f"Une erreur est survenue: {e}")
 
 
 class MyHandler(FileSystemEventHandler):
@@ -167,16 +144,13 @@ class MyHandler(FileSystemEventHandler):
 
                     case ".csv":
                         print("Conversion du csv en txt...")
+                        convert_csv_to_txt(path,mirror_path)
 
                     case ".txt":
                         print("Copie du txt...")
                         copy_file(path,mirror_path)
                     case _:
                         print(f"Extension de fichier \"{extension}\" inconnue.")
-
-
-
-                        #print(f"Fichier créé : ", path)
 
             # ######################################
         elif file_or_folder(path) == "folder":
@@ -192,7 +166,7 @@ class MyHandler(FileSystemEventHandler):
         path = os.path.normpath(event.src_path)
 
         mirror_path = replace_first_folder(path,self.mirror_folder)
-        mirror_path = replace_file_extension(mirror_path)
+        mirror_path = replace_file_extension(mirror_path) # fichier txt
         file = Path(mirror_path)
 
         if file.is_file():
