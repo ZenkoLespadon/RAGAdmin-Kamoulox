@@ -27,9 +27,10 @@ def convert_pdf_in_txt(source_path: str, save_path: str) -> None:
     save_path: str
     reader: PdfReader
     txt_file: Any
-    texte: str
+    text: str
     page_num: int
     page: Any
+    os.chmod(source_path, 0o777)
     if not os.access(source_path, os.R_OK):
         print(f"Erreur : Impossible de lire le fichier source {source_path}. Vérifiez les permissions.")
         return
@@ -43,15 +44,15 @@ def convert_pdf_in_txt(source_path: str, save_path: str) -> None:
         reader = PdfReader(source_path)
 
         # Ouvrir le fichier texte en mode écriture
-        with open(save_path, 'w', encoding='utf-8') as txt_file:
+        with open(save_path, 'w', encoding='utf-8') as text_file:
             for page_num, page in enumerate(reader.pages, start=1):
                 # Extraire le texte de la page
-                texte = page.extract_text()
-                if texte:
-                    txt_file.write(texte.strip() + "\n")
+                text = page.extract_text()
+                if text:
+                    text_file.write(text + "\n")
 
                 # Ajouter une ligne vide entre les pages pour lisibilité
-                txt_file.write("\n")
+                text_file.write("\n")
 
         print(f"Conversion réussie ! Le fichier texte a été enregistré sous : {save_path}")
     except Exception as e:

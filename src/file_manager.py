@@ -87,6 +87,42 @@ def replace_file_extension(file_path: str, extension: str = ".txt") -> str:
         # En cas d'erreur, retourne le chemin d'origine
         return file_path
 
+def create_empty_file(file_path: str)->None:
+    """
+        Fonction qui crée un fichier vide (txt par défaut)
+        Entrée :
+            str : path du fichier à créer
+
+        Sortie : None
+    """
+    with open(file_path, 'w') as new_file:
+        # Crée un fichier vide
+        new_file.write("")
+
+def copy_file(source, destination):
+    """
+    Copie le contenu d'un fichier source vers un fichier de destination.
+
+    Args:
+        source (str): Le chemin du fichier source à copier.
+        destination (str): Le chemin du fichier de destination où le contenu sera copié.
+
+    Raises:
+        FileNotFoundError: Si le fichier source n'est pas trouvé.
+        Exception: Si une autre erreur se produit lors de la copie du fichier.
+
+    Exemple:
+        copy_file("source.txt", "copie.txt")
+        Cette commande copiera le contenu de "source.txt" vers "copie.txt".
+    """
+    try:
+        shutil.copy(source, destination)
+        print(f"Le fichier a été copié de {source} vers {destination}")
+    except FileNotFoundError:
+        print("Le fichier source n'a pas été trouvé.")
+    except Exception as e:
+        print(f"Une erreur est survenue: {e}")
+
 
 class MyHandler(FileSystemEventHandler):
     """
@@ -106,11 +142,11 @@ class MyHandler(FileSystemEventHandler):
 
 
             mirror_path = replace_first_folder(path,self.mirror_folder)
-            #file_name = Path(mirror_path).name
+
 
             create_missing_directories(mirror_path)
 
-            # A changer avec la fonction de convertion de pdf
+            #  convertion du fichier
             # ######################################
             mirror_path = replace_file_extension(mirror_path)
 
@@ -123,25 +159,20 @@ class MyHandler(FileSystemEventHandler):
                     # Crée un fichier vide
                     new_file.write("")
 
-                    extension=get_file_extension(path)
-                    match extension:
-                        case ".pdf":
-                            print("Conversion du pdf en txt...")
-                            # refaire la fonction pour qu'elle prenne :
-                            # le path original afin de chercher les données
-                            # le mirrorpath afin d'écrire les données
+                extension=get_file_extension(path)
+                match extension:
+                    case ".pdf":
+                        print("Conversion du pdf en txt...")
+                        convert_pdf_in_txt(path,mirror_path)
 
+                    case ".csv":
+                        print("Conversion du csv en txt...")
 
-                            print("path = ",os.path.exists(path))  # Devrait renvoyer True
-                            print("mirror_path = ",os.path.exists(mirror_path))  # Devrait renvoyer True
-
-                            convert_pdf_in_txt(path,mirror_path)
-                        case ".csv":
-                            print("Conversion du csv en txt...")
-                        case ".txt":
-                            print("Copie du txt...")
-                        case _:
-                            print(f"Extension de fichier \"{extension}\" inconnue.")
+                    case ".txt":
+                        print("Copie du txt...")
+                        copy_file(path,mirror_path)
+                    case _:
+                        print(f"Extension de fichier \"{extension}\" inconnue.")
 
 
 
