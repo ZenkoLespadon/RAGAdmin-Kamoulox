@@ -1,6 +1,6 @@
 from PyPDF2 import PdfReader
 
-def convertir_pdf_en_txt(pdf_path, txt_path):
+def convert_pdf_en_txt(pdf_path, txt_path):
     try:
         # Charger le fichier PDF
         reader = PdfReader(pdf_path)
