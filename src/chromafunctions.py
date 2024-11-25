@@ -1,7 +1,9 @@
 import chromadb
 from chromadb.utils import embedding_functions
-from pdf_to_txt import convert_pdf_en_txt
-
+from pdf_to_txt import convert_pdf_to_txt
+from pdf_to_json import convert_pdf_to_json
+from txt_to_json import convert_txt_to_json
+import json
 # Initialisation du client ChromaDB
 client = None  # Initialisé à None
 def get_client():
@@ -75,54 +77,38 @@ def search_in_collection_embedding(collection_name: str, query_embedding, k=1):
         return None
 
 def add_documentpdf(documentpdf_path, collection_name):
-    doc_txt = "document.txt"
-    convert_pdf_en_txt(documentpdf_path, doc_txt)
-    add_documenttxt(doc_txt, collection_name)
+    doc_json = "document.json"
+    convert_pdf_to_json(documentpdf_path, doc_json)
+    add_documentjson(doc_json, collection_name)
         
         
     
 def add_documenttxt(doc_txt, collection_name):
+    doc_json = "document.json"
+    convert_txt_to_json(doc_txt, doc_json)
+    add_documentjson(doc_json, collection_name)
+
+
+def add_documentjson(json_path, collection_name):
     try:
         client = get_client()
         collection = client.get_collection(collection_name)
-        # Initialisation des listes pour le contenu des pages et les métadonnées des numéros de page
-        documents = []
-        metadatas = []
-        
-        # Lecture du fichier
-        with open(doc_txt, 'r', encoding='utf-8') as file:
-            page_content = []  # Contenu temporaire pour une page
-            page_num = 2       # Initialisation du numéro de page
-            
-            for line in file:
-                # Si la ligne contient une indication de page du type "p.<numéro>", cela signifie le début de la page suivante
-                if f"=== Page {page_num} ===" in line:
-                    # Ajout du contenu de la page dans le tableau documents et du numéro de page dans le tableau metadatas
-                    clean_content = "".join(page_content).replace("\n", "").strip()
-                    documents.append(clean_content)
-                    metadatas.append(page_num-1)
-                    
-                    # Préparation pour la page suivante
-                    page_content = []  # Réinitialisation du contenu de la page
-                    page_num += 1      # Incrémentation du numéro de page
-                else:
-                    # Ajout de la ligne au contenu de la page actuelle
-                    page_content.append(line)
-            
-            # Ajouter la dernière page si elle ne se termine pas par un numéro de page
-            if page_content:
-                clean_content = "".join(page_content).replace("\n", "").strip()
-                documents.append(clean_content)
-                metadatas.append(page_num-1)
+
+        # Charger les données du fichier JSON
+        with open(json_path, 'r', encoding='utf-8') as json_file:
+            pages = json.load(json_file)
 
         existing_ids = set(collection.get()['ids'])
 
-        for i, (page_content, page_number) in enumerate(zip(documents, metadatas)):
+        for i, page in enumerate(pages):
+            page_content = page["content"]
+            page_number = page["page_number"]
+
             # Créer un identifiant unique qui n'est pas dans les IDs existants
             doc_id = f"doc_{i + 1}"
-            counter=i
+            counter = i
             while doc_id in existing_ids:
-                counter=counter+1
+                counter += 1
                 doc_id = f"doc_{counter + 1}"
             
             # Ajouter le nouvel ID à la liste des IDs existants pour éviter les conflits
@@ -134,37 +120,5 @@ def add_documenttxt(doc_txt, collection_name):
                 documents=[page_content],
                 metadatas=[{"page_number": page_number}]
             )
-    except Exception as e:
-        print("Une erreur a eu lieu :", e)
-
-def add_documents_from_folder_pdf(folder_path, collection_name):
-    try:
-        if not os.path.isdir(folder_path):
-            raise ValueError(f"Le chemin fourni '{folder_path}' n'est pas un dossier valide.")
-        
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
-            
-            if os.path.isfile(file_path) and file_path.lower().endswith(".pdf"):
-                print(f"Traitement du fichier PDF : {file_path}")
-                ajout_documentpdf(file_path, collection_name)
-            else:
-                print(f"Le fichier {file_path} n'est pas un PDF ou n'a pas pu être ajouté à chromaDB")
-    except Exception as e:
-        print("Une erreur a eu lieu :", e)
-
-def add_documents_from_folder_txt(folder_path, collection_name):
-    try:
-        if not os.path.isdir(folder_path):
-            raise ValueError(f"Le chemin fourni '{folder_path}' n'est pas un dossier valide.")
-        
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
-            
-            if os.path.isfile(file_path) and file_path.lower().endswith(".txt"):
-                print(f"Traitement du fichier TXT : {file_path}")
-                ajout_documenttxt(file_path, collection_name)
-            else:
-                print(f"Le fichier {file_path} n'est pas un TXT ou n'a pas pu être ajouté à chromaDB")
     except Exception as e:
         print("Une erreur a eu lieu :", e)
