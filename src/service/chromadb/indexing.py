@@ -56,8 +56,8 @@ def indexing_csv_files(all_files):
 
 
 
-def indexing_pdf_files(all_files):
-    files = all_files
+def indexing_pdf_files(dir_to_search):
+    files = os.listdir(dir_to_search)
     pdf_dictionnary = dict()
     temp_name_file = ""
     pdf_files = []
