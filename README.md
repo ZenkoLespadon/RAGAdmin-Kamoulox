@@ -41,8 +41,8 @@ La configuration des machines est la suivante :
     </tr>
     <tr>
         <td>Chroma DB</td>
-        <td>-</td> <!-- Cellule fusionnée pour masquer la bordure -->
-        <td>-</td>
+        <td>192.168.0.22</td> <!-- Cellule fusionnée pour masquer la bordure -->
+        <td>8000</td>
         <td>Machine accueillant la base de données vectorielle du LLM.</td>
     </tr>
   
