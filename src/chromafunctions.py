@@ -1,8 +1,6 @@
 import chromadb
 from chromadb.utils import embedding_functions
 from pdf_to_txt import convert_pdf_to_txt
-from pdf_to_json import convert_pdf_to_json
-from txt_to_json import convert_txt_to_json
 import json
 # Initialisation du client ChromaDB
 client = None  # Initialisé à None
@@ -77,48 +75,42 @@ def search_in_collection_embedding(collection_name: str, query_embedding, k=1):
         return None
 
 def add_documentpdf(documentpdf_path, collection_name):
-    doc_json = "document.json"
-    convert_pdf_to_json(documentpdf_path, doc_json)
-    add_documentjson(doc_json, collection_name)
-        
-        
-    
-def add_documenttxt(doc_txt, collection_name):
-    doc_json = "document.json"
-    convert_txt_to_json(doc_txt, doc_json)
-    add_documentjson(doc_json, collection_name)
+    doc_txt = "document.txt"
+    convert_pdf_to_txt(documentpdf_path, doc_txt)
+    add_document_txt(doc_txt, collection_name)
 
 
-def add_documentjson(json_path, collection_name):
+def add_document_txt(txt_path, collection_name):
+    """
+    Ajoute un document TXT à une collection. Le contenu entier du fichier est considéré comme un document unique.
+    """
     try:
         client = get_client()
         collection = client.get_collection(collection_name)
 
-        # Charger les données du fichier JSON
-        with open(json_path, 'r', encoding='utf-8') as json_file:
-            pages = json.load(json_file)
+        # Charger le contenu du fichier TXT
+        with open(txt_path, 'r', encoding='utf-8') as txt_file:
+            content = txt_file.read()
 
+        # Vérifier les IDs existants dans la collection
         existing_ids = set(collection.get()['ids'])
 
-        for i, page in enumerate(pages):
-            page_content = page["content"]
-            page_number = page["page_number"]
-
-            # Créer un identifiant unique qui n'est pas dans les IDs existants
-            doc_id = f"doc_{i + 1}"
-            counter = i
-            while doc_id in existing_ids:
-                counter += 1
-                doc_id = f"doc_{counter + 1}"
-            
-            # Ajouter le nouvel ID à la liste des IDs existants pour éviter les conflits
-            existing_ids.add(doc_id)
-            
-            # Ajouter le document avec son contenu et ses métadonnées
-            collection.add(
-                ids=[doc_id],
-                documents=[page_content],
-                metadatas=[{"page_number": page_number}]
-            )
+        # Générer un identifiant unique pour le document
+        doc_id = "doc_unique"
+        counter = 0
+        while doc_id in existing_ids:
+            counter += 1
+            doc_id = f"doc_unique_{counter}"
+        
+        # Ajouter le nouvel ID à la liste des IDs existants
+        existing_ids.add(doc_id)
+        
+        # Ajouter le document avec son contenu
+        collection.add(
+            ids=[doc_id],
+            documents=[content],
+            metadatas=[{"source": txt_path}]
+        )
+        print(f"Document '{txt_path}' ajouté avec succès avec l'ID '{doc_id}'.")
     except Exception as e:
         print("Une erreur a eu lieu :", e)

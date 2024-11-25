@@ -9,7 +9,7 @@ from service.FileConverter import *
 
 def file_or_folder(path:str) -> str :
     """
-        Fonction qui prend en paramette un chemin d'accès et différentie un fichier d'un dossier
+        Fonction qui prends en parametre un chemin d'accès et différencie un fichier d'un dossier
 
         Entrée : path
 
