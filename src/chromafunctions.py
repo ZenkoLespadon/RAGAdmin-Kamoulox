@@ -82,7 +82,8 @@ def add_documentpdf(documentpdf_path, collection_name):
 
 def add_document_txt(txt_path, collection_name):
     """
-    Ajoute un document TXT à une collection. Le contenu entier du fichier est considéré comme un document unique.
+    Ajoute un document TXT à une collection. Le contenu est divisé en morceaux (chunks)
+    qui se superposent à 10 %, et chaque chunk est ajouté comme un document distinct.
     """
     try:
         client = get_client()
@@ -92,25 +93,42 @@ def add_document_txt(txt_path, collection_name):
         with open(txt_path, 'r', encoding='utf-8') as txt_file:
             content = txt_file.read()
 
+        # Fonction pour diviser le texte en chunks avec chevauchement
+        def split_into_chunks(text, chunk_size, overlap):
+            step = chunk_size - overlap
+            chunks = [
+                text[i:i + chunk_size]
+                for i in range(0, len(text), step)
+                if i + chunk_size <= len(text) or len(text) - i > overlap
+            ]
+            return chunks
+
+        # Définir la taille des chunks et le chevauchement (en caractères)
+        chunk_size = 1000  # Taille de chaque chunk (par exemple 1000 caractères)
+        overlap = int(chunk_size * 0.1)  # 10 % de chevauchement
+
+        # Diviser le contenu en chunks
+        chunks = split_into_chunks(content, chunk_size, overlap)
+
         # Vérifier les IDs existants dans la collection
         existing_ids = set(collection.get()['ids'])
 
-        # Générer un identifiant unique pour le document
-        doc_id = "doc_1"
-        counter = 0
-        while doc_id in existing_ids:
-            counter += 1
-            doc_id = f"doc_{counter}"
-        
-        # Ajouter le nouvel ID à la liste des IDs existants
-        existing_ids.add(doc_id)
-        
-        # Ajouter le document avec son contenu
-        collection.add(
-            ids=[doc_id],
-            documents=[content],
-            metadatas=[{"source": txt_path}]
-        )
-        print(f"Document '{txt_path}' ajouté avec succès avec l'ID '{doc_id}'.")
+        # Ajouter chaque chunk comme un document avec un ID unique
+        for index, chunk in enumerate(chunks):
+            doc_id = f"doc_{index}"
+            counter = 0
+            while doc_id in existing_ids:
+                counter += 1
+                doc_id = f"doc_{counter}"
+
+            # Ajouter le document avec son contenu
+            collection.add(
+                ids=[doc_id],
+                documents=[chunk],
+                metadatas=[{"source": txt_path, "chunk_index": index}]
+            )
+
+        print(f"Document '{txt_path}' divisé en {len(chunks)} chunks et ajouté avec succès à la collection '{collection_name}'.")
+
     except Exception as e:
         print("Une erreur a eu lieu :", e)
