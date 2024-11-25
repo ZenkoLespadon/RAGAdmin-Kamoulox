@@ -1,7 +1,10 @@
 import pypdf
 
 def pdf_to_text(pdf):
-    final_doc = []
-    for i in range(len(pdf.pages)):
-        final_doc.append(pdf.pages[i].extract_text())
-    return final_doc
+    docs = []
+    for files  in pdf:
+        final_doc = []
+        for i in range(len(files.pages)):
+            final_doc.append(files.pages[i].extract_text())
+        docs.append(final_doc)
+    return docs
