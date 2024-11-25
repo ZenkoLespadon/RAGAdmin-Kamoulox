@@ -96,11 +96,11 @@ def add_document_txt(txt_path, collection_name):
         existing_ids = set(collection.get()['ids'])
 
         # Générer un identifiant unique pour le document
-        doc_id = "doc_unique"
+        doc_id = "doc_1"
         counter = 0
         while doc_id in existing_ids:
             counter += 1
-            doc_id = f"doc_unique_{counter}"
+            doc_id = f"doc_{counter}"
         
         # Ajouter le nouvel ID à la liste des IDs existants
         existing_ids.add(doc_id)
