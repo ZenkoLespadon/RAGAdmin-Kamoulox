@@ -1,7 +1,7 @@
 import os
 from PyPDF2 import PdfReader
 import csv
-
+import shutil
 
 def convert_pdf_to_txt(source_path: str, save_path: str) -> None:
     """

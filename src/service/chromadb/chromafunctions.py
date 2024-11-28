@@ -1,6 +1,6 @@
 import chromadb
 from chromadb.utils import embedding_functions
-
+from chromadb.api import EmbeddingFunction
 
 def get_client(ip_host:str = "127.0.0.1"):
     try:
@@ -9,19 +9,45 @@ def get_client(ip_host:str = "127.0.0.1"):
         client = None
     return client
 
-def create_collection(collection_name: str,ip_host:str = "127.0.0.1"):
+
+
+def create_collection(collection_name: str, ip_host: str = "127.0.0.1"):
     """
-    Crée une nouvelle collection dans la base de données.
+    Vérifie si une collection existe et la crée si elle n'existe pas.
+
+    Args:
+        collection_name (str): Nom de la collection à créer ou récupérer.
+        ip_host (str): Adresse IP de l'hôte ChromaDB. Par défaut "127.0.0.1".
     """
     try:
+        # Obtenir le client ChromaDB
         client = get_client(ip_host)
+        print("client = ",client)
+        # Initialiser la fonction d'embedding
         sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name='all-mpnet-base-v2')
-        collection = client.create_collection(collection_name)
-        print(f"Collection '{collection_name}' créée avec succès.")
-        return collection
+
+
+        collection = client.get_collection(collection_name)
+        print(f"La collection '{collection_name}' existe déjà. Récupération réussie.")
+
     except Exception as e:
-        print(f"Erreur lors de la création de la collection: {e}")
-        return None
+        try:
+            collection = client.create_collection(collection_name, embedding_function=sentence_transformer_ef)
+            print(f"Collection '{collection_name}' créée avec succès.")
+        except Exception as ex:
+            print(f"Erreur lors de la création ou de la récupération de la collection: {ex}")
+
+
+def print_contents_of_collection(collection_name: str,ip_host:str = "127.0.0.1"):
+    client = get_client(ip_host)
+    collection = client.get_collection(collection_name)
+
+    all_data = collection.get()  # Récupère tout : ids, documents, metadonnées et embeddings
+
+    # Afficher le contenu
+    print("IDs:", all_data["ids"])
+    print("Documents:", all_data["documents"])
+    print("Metadatas:", all_data["metadatas"])
 
 def delete_collection(collection_name: str,ip_host:str = "127.0.0.1"):
     """
@@ -96,7 +122,11 @@ def add_document_txt(txt_path, collection_name,ip_host:str = "127.0.0.1"):
                 for i in range(0, len(text), step)
                 if i + chunk_size <= len(text) or len(text) - i > overlap
             ]
+            # Ajouter le reste du texte comme chunk s'il est trop court
+            if not chunks and text.strip():
+                chunks.append(text)  # Ajouter tout le texte comme un chunk unique
             return chunks
+
 
         # Définir la taille des chunks et le chevauchement (en caractères)
         chunk_size = 1000  # Taille de chaque chunk (par exemple 1000 caractères)
@@ -128,13 +158,58 @@ def add_document_txt(txt_path, collection_name,ip_host:str = "127.0.0.1"):
     except Exception as e:
         print("Une erreur a eu lieu :", e)
 
-def delete_a_file_in_the_collection(txt_path:str, collection_name:str,ip_host:str = "127.0.0.1"):
-    client = get_client(ip_host)
-    collection = client.get_collection(collection_name)
+def delete_a_file_in_the_collection(txt_path: str, collection_name: str, ip_host: str = "127.0.0.1"):
+    """
+    Supprime les documents contenant une référence au chemin (txt_path) dans leur contenu brut.
 
-    results = collection.query(where={"source": txt_path})
-    ids_to_delete = [result["id"] for result in results["documents"]]
-    collection.delete(ids=ids_to_delete)
+    Args:
+        txt_path (str): Le chemin ou texte à rechercher dans le contenu des documents.
+        collection_name (str): Le nom de la collection où chercher et supprimer le fichier.
+        ip_host (str): L'adresse de l'hôte ChromaDB. Par défaut "127.0.0.1".
+    """
+    # Connexion au client ChromaDB
+    client = get_client(ip_host)
+
+    # Récupérer la collection
+    collection = client.get_collection(collection_name)
+    all_documents = collection.get()
+    #print("Structure complète de all_documents :", all_documents,"\n")
+    # Récupérer tous les documents de la collection
+    tab_of_ids = []
+    try:
+        if "metadatas" in all_documents:
+            for index, doc in enumerate(all_documents["metadatas"]):
+                print(doc)
+                source = doc.get("source")
+                if source:
+                    print(f"Source : {source}")
+                    print(f"Path   : {txt_path}")
+                    if source == txt_path:
+                        tab_of_ids.append(index)
+                else:
+                    print("Aucune source trouvée dans ce document.")
+        else:
+            print("Aucune metadatas trouvée.")
+
+        if len(tab_of_ids)>0:
+            if "ids" in all_documents:
+                for index, doc_id in enumerate(all_documents["ids"]):
+                    print(doc_id)
+                    for i in range(len(tab_of_ids)):
+                        if tab_of_ids[i]==index:
+                            collection.delete(ids=[doc_id])
+                            print("Document ",doc_id, " supprimé")
+        else:
+            print("Aucun document à supprimer")
+    except Exception as e:
+        print(f"Une erreur est survenue lors de la suppression du document : {e}")
+
+
+
+
 
 if __name__ == "__main__":
     Collection_name = "docs"
+    #delete_collection(Collection_name)
+    delete_a_file_in_the_collection(r"files\Nouveau dossier\test.txt", Collection_name)
+

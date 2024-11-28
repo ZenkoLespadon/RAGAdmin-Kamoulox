@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from service.functions import *
 
+
 def file_or_folder(path:str) -> str :
     """
         Fonction qui prends en parametre un chemin d'accès et différencie un fichier d'un dossier

@@ -1,6 +1,5 @@
 import os
 import time
-import shutil
 from pathlib import Path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -32,6 +31,7 @@ class MyHandler(FileSystemEventHandler):
 
             #  convertion du fichier
             # ######################################
+            create_collection(Collection_name,Host)
             mirror_path = replace_file_extension(mirror_path)
 
             new_txt_file = Path(mirror_path)
@@ -49,6 +49,7 @@ class MyHandler(FileSystemEventHandler):
                         print("Conversion du pdf en txt...")
                         convert_pdf_to_txt(path,mirror_path)
                         add_document_txt(mirror_path,Collection_name,Host)
+                        #print_contents_of_collection(Collection_name,Host)
 
                     case ".csv":
                         print("Conversion du csv en txt...")
@@ -82,8 +83,12 @@ class MyHandler(FileSystemEventHandler):
         if file.is_file():
             #print(f"Le fichier '{file}' existe.")
             os.remove(mirror_path)
-            delete_a_file_in_the_collection(mirror_path,Collection_name,Host)
 
+            try:
+                delete_a_file_in_the_collection(mirror_path,Collection_name,Host)
+            except Exception as e:
+                print(f"Erreur, lors de la suppression du fichier dans chroma db : {e}")
+            #print_contents_of_collection(Collection_name,Host)
         else:
             if os.path.isdir(mirror_path):# si le dossier existe
 
