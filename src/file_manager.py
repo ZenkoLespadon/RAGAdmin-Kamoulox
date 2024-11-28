@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from service.FileConverter import *
 from service.functions import *
-
+from service.chromadb.chromafunctions import *
 
 
 
@@ -26,9 +26,7 @@ class MyHandler(FileSystemEventHandler):
         path = os.path.normpath(event.src_path)
         if file_or_folder(path) == "file":  # Éviter les dossiers
 
-
             mirror_path = replace_first_folder(path,self.mirror_folder)
-
 
             create_missing_directories(mirror_path)
 
@@ -50,15 +48,17 @@ class MyHandler(FileSystemEventHandler):
                     case ".pdf":
                         print("Conversion du pdf en txt...")
                         convert_pdf_to_txt(path,mirror_path)
-
+                        add_document_txt(mirror_path,Collection_name,Host)
 
                     case ".csv":
                         print("Conversion du csv en txt...")
                         convert_csv_to_txt(path,mirror_path)
+                        add_document_txt(mirror_path,Collection_name,Host)
 
                     case ".txt":
                         print("Copie du txt...")
                         copy_file(path,mirror_path)
+                        add_document_txt(mirror_path,Collection_name,Host)
                     case _:
                         print(f"Extension de fichier \"{extension}\" inconnue.")
 
@@ -98,6 +98,9 @@ if __name__ == "__main__" :
     # Dossier à surveiller
     PATH_TO_WATCH = "docs"
     PATH_TO_SAVE = "files"
+
+    Host = "192.168.0.22"
+    Collection_name = "docs"
 
     # Initialiser l'observateur
     event_handler = MyHandler(PATH_TO_SAVE)
