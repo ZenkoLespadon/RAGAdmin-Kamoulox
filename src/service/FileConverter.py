@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 import csv
 
 
-def convert_pdf_in_txt(source_path: str, save_path: str) -> None:
+def convert_pdf_to_txt(source_path: str, save_path: str) -> None:
     """
     Convertit un fichier PDF en fichier texte en extrayant le contenu de chaque page.
 

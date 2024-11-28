@@ -166,3 +166,10 @@ src/docs/
 src/files/
 
 src/fileOrFolder.py
+
+docker-compose.yml
+
+Dockerfile
+src/langchain.py
+
+src/Nouveau Document texte.txt

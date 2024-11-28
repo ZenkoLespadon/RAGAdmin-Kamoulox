@@ -1,13 +1,12 @@
 import chromadb
 from chromadb.utils import embedding_functions
-from pdf_to_txt import convert_pdf_to_txt
-import json
-# Initialisation du client ChromaDB
-client = None  # Initialisé à None
+
+
 def get_client():
-    global client
-    if client is None:
-        client = chromadb.HttpClient(host='192.168.0.22', port=8000)
+    try:
+        client = chromadb.HttpClient(host='127.0.0.1', port=8000)
+    except Exception:
+        client = None
     return client
 
 def create_collection(collection_name: str):
@@ -132,3 +131,6 @@ def add_document_txt(txt_path, collection_name):
 
     except Exception as e:
         print("Une erreur a eu lieu :", e)
+
+if __name__ == "__main__":
+    Collection_name = "docs"
