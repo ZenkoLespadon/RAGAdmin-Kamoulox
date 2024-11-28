@@ -2,19 +2,19 @@ import chromadb
 from chromadb.utils import embedding_functions
 
 
-def get_client():
+def get_client(ip_host:str = "127.0.0.1"):
     try:
-        client = chromadb.HttpClient(host='127.0.0.1', port=8000)
+        client = chromadb.HttpClient(host=ip_host, port=8000)
     except Exception:
         client = None
     return client
 
-def create_collection(collection_name: str):
+def create_collection(collection_name: str,ip_host:str = "127.0.0.1"):
     """
     Crée une nouvelle collection dans la base de données.
     """
     try:
-        client = get_client()
+        client = get_client(ip_host)
         sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name='all-mpnet-base-v2')
         collection = client.create_collection(collection_name)
         print(f"Collection '{collection_name}' créée avec succès.")
@@ -23,24 +23,24 @@ def create_collection(collection_name: str):
         print(f"Erreur lors de la création de la collection: {e}")
         return None
 
-def delete_collection(collection_name: str):
+def delete_collection(collection_name: str,ip_host:str = "127.0.0.1"):
     """
     Supprime une collection existante.
     """
     try:
-        client = get_client()
+        client = get_client(ip_host)
         client.delete_collection(collection_name)
         print(f"Collection '{collection_name}' supprimée avec succès.")
     except Exception as e:
         print(f"Erreur lors de la suppression de la collection: {e}")
 
 
-def search_in_collection_text(collection_name: str, query_text: str, k=1):
+def search_in_collection_text(collection_name: str, query_text: str, k:int=1,ip_host:str = "127.0.0.1"):
     """
     Recherche dans la collection en fonction du contenu.
     """
     try:
-        client = get_client()
+        client = get_client(ip_host)
         collection = client.get_collection(collection_name)
         results = collection.query(
             query_texts=query_text,
@@ -54,12 +54,12 @@ def search_in_collection_text(collection_name: str, query_text: str, k=1):
         print(f"Erreur lors de la recherche dans la collection: {e}")
         return None
 
-def search_in_collection_embedding(collection_name: str, query_embedding, k=1):
+def search_in_collection_embedding(collection_name: str, query_embedding, k:int=1,ip_host:str = "127.0.0.1"):
     """
     Recherche dans la collection en fonction des embeddings.
     """
     try:
-        client = get_client()
+        client = get_client(ip_host)
         collection = client.get_collection(collection_name)
         results = collection.query(
             query_embeddings=[query_embedding],  # Embedding de la requête
@@ -73,19 +73,15 @@ def search_in_collection_embedding(collection_name: str, query_embedding, k=1):
         print(f"Erreur lors de la recherche dans la collection: {e}")
         return None
 
-def add_documentpdf(documentpdf_path, collection_name):
-    doc_txt = "document.txt"
-    convert_pdf_to_txt(documentpdf_path, doc_txt)
-    add_document_txt(doc_txt, collection_name)
 
 
-def add_document_txt(txt_path, collection_name):
+def add_document_txt(txt_path, collection_name,ip_host:str = "127.0.0.1"):
     """
     Ajoute un document TXT à une collection. Le contenu est divisé en morceaux (chunks)
     qui se superposent à 10 %, et chaque chunk est ajouté comme un document distinct.
     """
     try:
-        client = get_client()
+        client = get_client(ip_host)
         collection = client.get_collection(collection_name)
 
         # Charger le contenu du fichier TXT
@@ -131,6 +127,14 @@ def add_document_txt(txt_path, collection_name):
 
     except Exception as e:
         print("Une erreur a eu lieu :", e)
+
+def delete_a_file_in_the_collection(txt_path:str, collection_name:str,ip_host:str = "127.0.0.1"):
+    client = get_client(ip_host)
+    collection = client.get_collection(collection_name)
+
+    results = collection.query(where={"source": txt_path})
+    ids_to_delete = [result["id"] for result in results["documents"]]
+    collection.delete(ids=ids_to_delete)
 
 if __name__ == "__main__":
     Collection_name = "docs"

@@ -82,6 +82,8 @@ class MyHandler(FileSystemEventHandler):
         if file.is_file():
             #print(f"Le fichier '{file}' existe.")
             os.remove(mirror_path)
+            delete_a_file_in_the_collection(mirror_path,Collection_name,Host)
+
         else:
             if os.path.isdir(mirror_path):# si le dossier existe
 
