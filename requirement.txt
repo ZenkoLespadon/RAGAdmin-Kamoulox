@@ -1,0 +1,7 @@
+transformers
+chromadb
+sentence-transformers
+langchain
+fastapi
+uvicorn[standard] 
+PDFPlumber
