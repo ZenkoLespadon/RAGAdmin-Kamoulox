@@ -1,38 +1,38 @@
-# Lancer le projet
+# Run the project
 
-## La première fois
+## The first time
 
-### Créer un environnement virtuel python
+### Create a Python virtual environment
 python3 -m venv llm-env
 
-### Installer toutes les dépendances
+### Install all dependencies
 pip install -r requirement.txt
 
-### Aller dans l'environnement virtuel (à faire à la racine du projet)
+### Go into the virtual environment (to do at the root of the project)
 source llm-env/bin/activate
 
-### Démarrer le projet avec uvicorn (à faire à la racine du projet)
-uvicorn src.__main__:app --host IP_DU_SERVEUR --port PORT_DU_SERVICE
+### Start the project with uvicorn (to do at the root of the project)
+uvicorn src.__main__:app --host SERVER_IP --port SERVICE_PORT
 
 
-## Les fois suivantes
+## The following times
 
-### Aller dans l'environnement virtuel (à faire à la racine du projet)
+### Go into the virtual environment (to do at the root of the project)
 source llm-env/bin/activate
 
-### Démarrer le projet avec uvicorn (à faire à la racine du projet)
-uvicorn src.__main__:app --host IP_DU_SERVEUR --port PORT_DU_SERVICE
+### Start the project with uvicorn (to do at the root of the project)
+uvicorn src.__main__:app --host SERVER_IP --port SERVICE_PORT
 
 
 
-# Ajouter un document dans ChromaDB 
+# Add a document into ChromaDB 
 
-### Mettre le document dans src/service/chromadb (obligatoire)
+### Put the document in src/service/chromadb (mandatory)
 
-### Mettre le nom du document à la fin du fichier AddPdfToChroma.py
+### Put the document name at the end of the AddPdfToChroma.py file
 
-### Aller dans l'environnement virtuel (à faire dans src/service/chromadb ou changer le chemin)
+### Go into the virtual environment (to do in src/service/chromadb or change the path)
 source ../../../llm-env/bin/activate
 
-### Lancer le programme
+### Run the program
 python3 AddPdfToChroma.py
